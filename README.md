@@ -1,4 +1,4 @@
-#EMU 8086 MicroC Translator
+# EMU 8086 MicroC Translator
 
 An educational tool that converts a subset of C language into 8086-compatible assembly code for emulation environments.
 
