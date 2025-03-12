@@ -1,0 +1,238 @@
+.MODEL SMALL
+.STACK 1000H
+.DATA
+	FIXED_POINT_MULTIPLIER DW 64H
+	CR EQU 0Dh
+	LF EQU 0Ah
+	NEWLINEM DB CR,LF,'$'
+	TEN DW 10
+
+
+
+NEWLINE PROC 
+	
+	PUSH AX
+	PUSH DX
+	
+	LEA DX, NEWLINEM
+	MOV AH,9
+	INT 21h
+	
+	POP DX
+	POP AX 
+	RET
+   
+NEWLINE ENDP
+
+PRINTNUMBER PROC
+	PUSH CX
+	MOV CX,0   
+	
+	CMP AX,0			 
+	JG PRINTNUMBER_START 
+	
+	CMP AX,0
+	JNE NOT_ZERO
+	MOV DX,0
+	ADD DL,'0'
+	MOV AH, 02H
+	INT 21H
+CALL NEWLINE 
+	POP CX  
+	RET
+	
+	
+	NOT_ZERO:
+	PUSH AX
+	MOV DX,'-'
+	MOV AH, 02H
+	INT 21H 
+	POP AX  
+	NEG AX
+	
+	PRINTNUMBER_START:
+	CMP AX,0
+	JE PRINTNUMBER_END 
+	
+	XOR DX, DX
+	DIV TEN
+	ADD DL, '0'
+	PUSH DX
+	INC CX
+	JMP PRINTNUMBER_START
+	
+	PRINTNUMBER_END:
+	
+	PRINTNUMBER_LOOP:
+		
+		POP DX
+		MOV AH, 02H
+		INT 21H
+	
+	LOOP PRINTNUMBER_LOOP
+CALL NEWLINE 
+	POP CX
+	RET
+	
+PRINTNUMBER ENDP
+
+;  type_specifier declaration_list SEMICOLON
+;  type_specifier declaration_list SEMICOLON
+
+
+var PROC
+	PUSH BP
+	MOV BP,SP
+
+;  RETURN expression SEMICOLON
+	MOV CX,
+	MOV CX,
+	POP AX
+	ADD AX,CX
+	MOV CX,AX
+	MOV DX,CX
+	JMP var_exit
+
+var_exit:
+	ADD SP,0
+	POP BP
+	RET
+	var ENDP
+
+
+foo PROC
+	PUSH BP
+	MOV BP,SP
+;  expression_statement
+	MOV CX,2
+	MOV ,CX
+
+;  expression_statement
+	MOV CX,
+	MOV CX,5
+	POP AX
+	SUB AX,CX
+	MOV CX,AX
+	MOV ,CX
+
+foo_exit:
+	ADD SP,0
+	POP BP
+RET
+foo ENDP
+
+
+main PROC
+	PUSH BP
+	MOV BP,SP
+	MOV AX,@DATA
+	MOV DS,AX
+
+;  type_specifier declaration_list SEMICOLON
+
+;  type_specifier declaration_list SEMICOLON
+
+;  expression_statement
+	MOV CX,0
+	MOV BX,CX
+	SHL BX,1
+	NEG BX
+	ADD BX,0
+	ADD BX,BP
+	MOV CX,[BX]
+
+;  expression_statement
+	MOV CX,1
+	MOV BX,CX
+	SHL BX,1
+	NEG BX
+	ADD BX,0
+	ADD BX,BP
+	MOV CX,5
+	MOV [BX],CX
+
+;  expression_statement
+	MOV CX,0
+	MOV BX,CX
+	SHL BX,1
+	NEG BX
+	ADD BX,0
+	ADD BX,BP
+	MOV CX,[BX]
+	MOV CX,1
+	MOV BX,CX
+	SHL BX,1
+	NEG BX
+	ADD BX,0
+	ADD BX,BP
+	MOV CX,[BX]
+	POP AX
+	ADD AX,CX
+	MOV CX,AX
+	MOV ,CX
+
+;  expression_statement
+	MOV CX,2
+	MOV CX,3
+	POP AX
+IMUL CX
+	MOV CX,AX
+	PUSH CX
+	MOV CX,4
+	POP AX
+	CMP AX,CX
+	JL label1
+	MOV CX,0
+	JMP label2
+label1:
+	MOV CX,1
+label2:
+	CMP CX,0
+	JCXZ label3
+	MOV CX,8
+label3:
+	POP AX
+	ADD AX,CX
+	MOV CX,AX
+	CMP CX,0
+	JNZ label4
+	MOV CX,2
+label4:
+	MOV ,CX
+
+;  expression_statement
+	MOV CX,1
+	PUSH CX
+	MOV CX,2
+	MOV CX,3
+	POP AX
+IMUL CX
+	MOV CX,AX
+	PUSH CX
+	CALL var
+	MOV CX,DX
+	ADD SP,4
+	MOV CX,3.5
+	MOV CX,2
+	POP AX
+IMUL CX
+	MOV CX,AX
+	POP AX
+	ADD AX,CX
+	MOV CX,AX
+	MOV ,CX
+
+;  RETURN expression SEMICOLON
+	MOV CX,0
+	MOV DX,CX
+	JMP main_exit
+
+main_exit:
+	ADD SP,0
+	POP BP
+	MOV AH,4ch
+INT 21h
+
+main ENDP
+
+END main
